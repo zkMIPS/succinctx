@@ -40,6 +40,10 @@ impl<L: PlonkParameters<D>, const D: usize> CircuitBuild<L, D> {
         PublicInput::new(&self.io)
     }
 
+    pub fn set_data(&mut self, data: CircuitData<L::Field, L::Config, D>) {
+        self.data = data
+    }
+
     /// Generates a proof for the circuit using a plonky2 partial witness. The proof can be verified
     /// using `verify`.
     pub fn prove_with_partial_witness(
