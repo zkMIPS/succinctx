@@ -13,8 +13,9 @@ timing = ["plonky2/timing"]
 ci = []
 
 [dependencies]
-plonky2 = { git = "https://github.com/mir-protocol/plonky2.git", default-features = false, rev = "f46cf4ef680ddfd4941691a7d37e5a2568a89cf7"}
-curta = { git = "https://github.com/zkMIPS/curta.git", rev = "b331472" }
+#plonky2 = { git = "https://github.com/mir-protocol/plonky2.git", default-features = false, rev = "2d36559d" }
+plonky2 = { git = "https://github.com/zkMIPS/plonky2", branch = "zkm_dev", default-features = false }
+curta = { git = "https://github.com/zkMIPS/curta.git", branch = "zkm" }
 plonky2x-derive = { path = "../derive" }
 
 num = { version = "0.4", default-features = false }
@@ -51,7 +52,8 @@ digest = "0.10.7"
 sha256 = "1.4.0"
 
 [dev-dependencies]
-plonky2 = { git = "https://github.com/mir-protocol/plonky2.git", rev = "f46cf4ef680ddfd4941691a7d37e5a2568a89cf7", features = [
-    "gate_testing",
-] }
+#plonky2 = { git = "https://github.com/mir-protocol/plonky2.git", rev = "2d36559d", features = [
+#    "gate_testing",
+#] }
+plonky2 = { git = "https://github.com/zkMIPS/plonky2", branch = "zkm_dev", features = ["gate_testing"] }
 env_logger = "0.10.0"
