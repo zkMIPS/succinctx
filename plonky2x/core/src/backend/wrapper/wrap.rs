@@ -3,6 +3,7 @@ use std::path::Path;
 
 use anyhow::Result;
 use log::{debug, info};
+use plonky2::iop::target::Target;
 use plonky2::iop::witness::{PartialWitness, WitnessWrite};
 use plonky2::plonk::circuit_data::{
     CommonCircuitData, VerifierCircuitTarget, VerifierOnlyCircuitData,
@@ -54,15 +55,29 @@ where
             &circuit.data.common,
         );
 
-        let num_input_targets = 0;
-        let (proof_input_targets, _) = circuit_proof_target.public_inputs.split_at(2);
-        let (input_targets, output_targets) = proof_input_targets.split_at(num_input_targets);
+        let mut split_bits = |targets: &[Target], n_bits: usize| {
+            targets.iter().flat_map(|target| {
+                let bits = hash_builder.api.split_le(target.clone(), n_bits);
+                let mut bits = bits.into_iter().map(|x| x.target).collect::<Vec<_>>();
+                bits.reverse();
+                bits
+            }).collect::<Vec<_>>()
+        };
+        let (proof_input_targets, _) = circuit_proof_target.public_inputs.split_at(116);
+        let (input_targets, output_targets) = proof_input_targets.split_at(48);
+        let (input1_targets, input2_targets) = input_targets.split_at(16);
+        let mut input_bit_targets = split_bits(input1_targets, 32);
+        input_bit_targets.extend(split_bits(input2_targets, 8));
+        debug_assert_eq!(input_bit_targets.len(), 768);
 
-        let input_bytes = input_targets
+        let output_bit_targets = split_bits(output_targets, 64);
+        debug_assert_eq!(output_bit_targets.len(), 64 * 68);
+
+        let input_bytes = input_bit_targets
             .chunks_exact(ByteVariable::nb_elements())
             .map(ByteVariable::from_targets)
             .collect::<Vec<_>>();
-        let output_bytes = output_targets
+        let output_bytes = output_bit_targets
             .chunks_exact(ByteVariable::nb_elements())
             .map(ByteVariable::from_targets)
             .collect::<Vec<_>>();
