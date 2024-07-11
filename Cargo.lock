@@ -874,7 +874,7 @@ dependencies = [
 [[package]]
 name = "curta"
 version = "0.1.0"
-source = "git+https://github.com/zkMIPS/curta.git?branch=zkm#8d1d7748a6d4319d4fe1516fd5df1332d68b7cf2"
+source = "git+https://github.com/zkMIPS/curta.git?rev=b331472#b331472c22b34a799cd34828f01fbadb2fac3a5b"
 dependencies = [
  "anyhow",
  "bincode",
@@ -884,8 +884,8 @@ dependencies = [
  "itertools 0.10.5",
  "log",
  "num",
- "plonky2",
- "plonky2_maybe_rayon",
+ "plonky2 0.1.4 (git+https://github.com/mir-protocol/plonky2.git?rev=f46cf4ef680ddfd4941691a7d37e5a2568a89cf7)",
+ "plonky2_maybe_rayon 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "rand",
  "serde",
  "subtle-encoding",
@@ -2890,7 +2890,7 @@ checksum = "626dec3cac7cc0e1577a2ec3fc496277ec2baa084bebad95bb6fdbfae235f84c"
 [[package]]
 name = "plonky2"
 version = "0.1.4"
-source = "git+https://github.com/zkMIPS/plonky2?branch=zkm_dev#f1e28a6d85422edc8b0cf717b691cf2858339dfd"
+source = "git+https://github.com/mir-protocol/plonky2.git?rev=2d36559d#2d36559dad7adaff46631f31c7e6b24b80096eee"
 dependencies = [
  "ahash",
  "anyhow",
@@ -2900,9 +2900,33 @@ dependencies = [
  "keccak-hash",
  "log",
  "num",
- "plonky2_field",
- "plonky2_maybe_rayon",
- "plonky2_util",
+ "plonky2_field 0.1.1 (git+https://github.com/mir-protocol/plonky2.git?rev=2d36559d)",
+ "plonky2_maybe_rayon 0.1.1 (git+https://github.com/mir-protocol/plonky2.git?rev=2d36559d)",
+ "plonky2_util 0.1.1 (git+https://github.com/mir-protocol/plonky2.git?rev=2d36559d)",
+ "rand",
+ "rand_chacha",
+ "serde",
+ "serde_json",
+ "static_assertions",
+ "unroll",
+]
+
+[[package]]
+name = "plonky2"
+version = "0.1.4"
+source = "git+https://github.com/mir-protocol/plonky2.git?rev=f46cf4ef680ddfd4941691a7d37e5a2568a89cf7#f46cf4ef680ddfd4941691a7d37e5a2568a89cf7"
+dependencies = [
+ "ahash",
+ "anyhow",
+ "getrandom",
+ "hashbrown 0.14.3",
+ "itertools 0.11.0",
+ "keccak-hash",
+ "log",
+ "num",
+ "plonky2_field 0.1.1 (git+https://github.com/mir-protocol/plonky2.git?rev=f46cf4ef680ddfd4941691a7d37e5a2568a89cf7)",
+ "plonky2_maybe_rayon 0.1.1 (git+https://github.com/mir-protocol/plonky2.git?rev=f46cf4ef680ddfd4941691a7d37e5a2568a89cf7)",
+ "plonky2_util 0.1.1 (git+https://github.com/mir-protocol/plonky2.git?rev=f46cf4ef680ddfd4941691a7d37e5a2568a89cf7)",
  "rand",
  "rand_chacha",
  "serde",
@@ -2914,12 +2938,27 @@ dependencies = [
 [[package]]
 name = "plonky2_field"
 version = "0.1.1"
-source = "git+https://github.com/zkMIPS/plonky2?branch=zkm_dev#f1e28a6d85422edc8b0cf717b691cf2858339dfd"
+source = "git+https://github.com/mir-protocol/plonky2.git?rev=2d36559d#2d36559dad7adaff46631f31c7e6b24b80096eee"
 dependencies = [
  "anyhow",
  "itertools 0.11.0",
  "num",
- "plonky2_util",
+ "plonky2_util 0.1.1 (git+https://github.com/mir-protocol/plonky2.git?rev=2d36559d)",
+ "rand",
+ "serde",
+ "static_assertions",
+ "unroll",
+]
+
+[[package]]
+name = "plonky2_field"
+version = "0.1.1"
+source = "git+https://github.com/mir-protocol/plonky2.git?rev=f46cf4ef680ddfd4941691a7d37e5a2568a89cf7#f46cf4ef680ddfd4941691a7d37e5a2568a89cf7"
+dependencies = [
+ "anyhow",
+ "itertools 0.11.0",
+ "num",
+ "plonky2_util 0.1.1 (git+https://github.com/mir-protocol/plonky2.git?rev=f46cf4ef680ddfd4941691a7d37e5a2568a89cf7)",
  "rand",
  "serde",
  "static_assertions",
@@ -2929,7 +2968,24 @@ dependencies = [
 [[package]]
 name = "plonky2_maybe_rayon"
 version = "0.1.1"
-source = "git+https://github.com/zkMIPS/plonky2?branch=zkm_dev#f1e28a6d85422edc8b0cf717b691cf2858339dfd"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "194db0cbdd974e92d897cd92b74adb3968dc1b967315eb280357c49a7637994e"
+dependencies = [
+ "rayon",
+]
+
+[[package]]
+name = "plonky2_maybe_rayon"
+version = "0.1.1"
+source = "git+https://github.com/mir-protocol/plonky2.git?rev=2d36559d#2d36559dad7adaff46631f31c7e6b24b80096eee"
+dependencies = [
+ "rayon",
+]
+
+[[package]]
+name = "plonky2_maybe_rayon"
+version = "0.1.1"
+source = "git+https://github.com/mir-protocol/plonky2.git?rev=f46cf4ef680ddfd4941691a7d37e5a2568a89cf7#f46cf4ef680ddfd4941691a7d37e5a2568a89cf7"
 dependencies = [
  "rayon",
 ]
@@ -2937,7 +2993,12 @@ dependencies = [
 [[package]]
 name = "plonky2_util"
 version = "0.1.1"
-source = "git+https://github.com/zkMIPS/plonky2?branch=zkm_dev#f1e28a6d85422edc8b0cf717b691cf2858339dfd"
+source = "git+https://github.com/mir-protocol/plonky2.git?rev=2d36559d#2d36559dad7adaff46631f31c7e6b24b80096eee"
+
+[[package]]
+name = "plonky2_util"
+version = "0.1.1"
+source = "git+https://github.com/mir-protocol/plonky2.git?rev=f46cf4ef680ddfd4941691a7d37e5a2568a89cf7#f46cf4ef680ddfd4941691a7d37e5a2568a89cf7"
 
 [[package]]
 name = "plonky2x"
@@ -2965,7 +3026,7 @@ dependencies = [
  "log",
  "num",
  "num-bigint 0.4.4",
- "plonky2",
+ "plonky2 0.1.4 (git+https://github.com/mir-protocol/plonky2.git?rev=f46cf4ef680ddfd4941691a7d37e5a2568a89cf7)",
  "plonky2x-derive",
  "rand",
  "reqwest",
@@ -3492,7 +3553,7 @@ dependencies = [
  "ethers",
  "hex",
  "log",
- "plonky2",
+ "plonky2 0.1.4 (git+https://github.com/mir-protocol/plonky2.git?rev=2d36559d)",
  "plonky2x",
  "serde",
  "serde_json",
