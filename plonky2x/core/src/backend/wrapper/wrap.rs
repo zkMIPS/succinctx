@@ -2,7 +2,9 @@ use std::fs::{self, File};
 use std::path::Path;
 
 use anyhow::Result;
+use itertools::Itertools;
 use log::{debug, info};
+use plonky2::iop::target::Target;
 use plonky2::iop::witness::{PartialWitness, WitnessWrite};
 use plonky2::plonk::circuit_data::{
     CommonCircuitData, VerifierCircuitTarget, VerifierOnlyCircuitData,
@@ -14,6 +16,7 @@ use serde::Serialize;
 use crate::backend::circuit::{CircuitBuild, PlonkParameters};
 use crate::frontend::builder::CircuitBuilder;
 use crate::frontend::vars::{ByteVariable, CircuitVariable, Variable};
+
 #[derive(Debug)]
 pub struct WrappedCircuit<
     InnerParameters: PlonkParameters<D>,
@@ -42,7 +45,10 @@ impl<
 where
     <InnerParameters::Config as GenericConfig<D>>::Hasher: AlgebraicHasher<InnerParameters::Field>,
 {
-    pub fn build(circuit: CircuitBuild<InnerParameters, D>) -> Self {
+    pub fn build(
+        circuit: CircuitBuild<InnerParameters, D>,
+        pi_bit_size: Option<(Vec<usize>, Vec<usize>)>,
+    ) -> Self {
         // Standartize the public inputs/outputs to their hash and verify the circuit recursively.
         let mut hash_builder = CircuitBuilder::<InnerParameters, D>::new();
         let circuit_proof_target = hash_builder.add_virtual_proof_with_pis(&circuit.data.common);
@@ -54,15 +60,41 @@ where
             &circuit.data.common,
         );
 
-        let num_input_targets = 0;
-        let (proof_input_targets, _) = circuit_proof_target.public_inputs.split_at(2);
-        let (input_targets, output_targets) = proof_input_targets.split_at(num_input_targets);
+        let mut split_targets = |targets: &[Target], n_bits: Vec<usize>| {
+            targets
+                .iter()
+                .zip_eq(n_bits.iter())
+                .flat_map(|(&target, &n_bit)| {
+                    let bits = hash_builder.api.split_le(target, n_bit);
+                    let mut bits = bits.into_iter().map(|x| x.target).collect::<Vec<_>>();
+                    bits.reverse();
 
-        let input_bytes = input_targets
+                    bits
+                })
+                .collect::<Vec<_>>()
+        };
+
+        let num_public_inputs = circuit.data.common.num_public_inputs;
+        let num_input_targets = circuit.io.input().len();
+        // let num_output_targets = circuit.io.output().len();
+        let num_output_targets = num_public_inputs - num_input_targets;
+        // assert_eq!(num_public_inputs, num_input_targets + num_output_targets);
+
+        // default: 8 bits per public input
+        let (input_bit_size, output_bit_size) =
+            pi_bit_size.unwrap_or((vec![1; num_input_targets], vec![1; num_output_targets]));
+        let (proof_input_targets, proof_output_targets) = circuit_proof_target
+            .public_inputs
+            .split_at(num_input_targets);
+
+        let input_bit_targets = split_targets(proof_input_targets, input_bit_size);
+        let output_bit_targets = split_targets(proof_output_targets, output_bit_size);
+
+        let input_bytes = input_bit_targets
             .chunks_exact(ByteVariable::nb_elements())
             .map(ByteVariable::from_targets)
             .collect::<Vec<_>>();
-        let output_bytes = output_targets
+        let output_bytes = output_bit_targets
             .chunks_exact(ByteVariable::nb_elements())
             .map(ByteVariable::from_targets)
             .collect::<Vec<_>>();
@@ -287,7 +319,7 @@ mod tests {
         println!("Verified dummy_circuit");
 
         let dummy_wrapper =
-            WrappedCircuit::<InnerParameters, OuterParameters, D>::build(dummy_circuit);
+            WrappedCircuit::<InnerParameters, OuterParameters, D>::build(dummy_circuit, None);
         let dummy_wrapped_proof = dummy_wrapper.prove(&dummy_inner_proof).unwrap();
         dummy_wrapped_proof.save(dummy_path).unwrap();
         println!("Saved dummy_circuit");
@@ -304,7 +336,8 @@ mod tests {
         input.evm_write::<ByteVariable>(0u8);
         let (proof, _output) = circuit.prove(&input);
 
-        let wrapped_circuit = WrappedCircuit::<InnerParameters, OuterParameters, D>::build(circuit);
+        let wrapped_circuit =
+            WrappedCircuit::<InnerParameters, OuterParameters, D>::build(circuit, None);
 
         assert_eq!(
             wrapped_circuit.wrapper_circuit.data.common,
