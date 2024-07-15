@@ -90,7 +90,7 @@ impl<C: Circuit> Plonky2xFunction for C {
             // The wrapper circuit digest will get saved in the Solidity smart contract, which will
             // use this value as a public input `VerifierDigest` in the gnark plonky2 verifier.
             info!("First building wrapper circuit to get the wrapper circuit digest...");
-            let wrapped_circuit = WrappedCircuit::<L, WrapperParameters, D>::build(circuit);
+            let wrapped_circuit = WrappedCircuit::<L, WrapperParameters, D>::build(circuit, None);
 
             // to_bytes() returns the representation as LE, but we want to save it on-chain as BE
             // because that is the format of the public input to the gnark plonky2 verifier.
@@ -206,7 +206,7 @@ impl<C: Circuit> Plonky2xFunction for C {
             // choose to rebuild here instead of loading from disk.
             info!("Output Bytes: 0x{}", hex::encode(output_bytes.clone()));
             let wrapped_circuit =
-                WrappedCircuit::<InnerParameters, OuterParameters, D>::build(circuit);
+                WrappedCircuit::<InnerParameters, OuterParameters, D>::build(circuit, None);
             let wrapped_proof = wrapped_circuit.prove(&proof).expect("failed to wrap proof");
             wrapped_proof
                 .save("wrapped")

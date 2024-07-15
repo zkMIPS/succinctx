@@ -79,7 +79,7 @@ mod tests {
         let xor = output.evm_read::<ByteVariable>();
         assert_eq!(xor, 11u8);
         let wrapper: WrappedCircuit<_, _, 2> =
-            WrappedCircuit::<L, Groth16WrapperParameters, D>::build(circuit);
+            WrappedCircuit::<L, Groth16WrapperParameters, D>::build(circuit, None);
         let wrapped_proof = wrapper.prove(&proof).unwrap();
     }
 }
